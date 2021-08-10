@@ -5,7 +5,8 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const helmet = require("helmet");
 const path = require("path");
-const H5P = require("h5p-nodejs-library");
+const H5P = require("@lumieducation/h5p-server");
+const H5PExpress = require("@lumieducation/h5p-express");
 const fileUpload = require("express-fileupload");
 const session = require("express-session");
 const i18next = require("i18next");
@@ -16,6 +17,12 @@ const redisInstance = require("./redis");
 const h5pInstance = require("./h5p-helpers/instance");
 const h5pRender = require("./h5p-helpers/render");
 const streaming = require("./streaming/middleware");
+
+const {
+  h5pAjaxExpressRouter,
+  libraryAdministrationExpressRouter,
+  contentTypeCacheExpressRouter,
+} = H5PExpress;
 
 //initialize our app
 const app = express();
@@ -44,7 +51,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "development",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true, httpOnly: true, sameSite: "none" }
+    cookie: { secure: true, httpOnly: true, sameSite: "none" },
   })
 );
 
@@ -57,12 +64,13 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
     h5pEditor.libraryStorage,
     h5pEditor.contentStorage,
     h5pConfig,
-    null,
-    ["/assets/js/xapi-send.js"]
+    undefined,
+    undefined,
+    { customization: { global: { scripts: ["/assets/js/xapi-send.js"] } } }
   );
   app.use(
     fileUpload({
-      limits: { fileSize: h5pEditor.config.maxFileSize }
+      limits: { fileSize: h5pEditor.config.maxFileSize },
     })
   );
 
@@ -74,7 +82,7 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
   // object, which means we get all of them.
   app.use(
     h5pEditor.config.baseUrl,
-    H5P.adapters.express(
+    h5pAjaxExpressRouter(
       h5pEditor,
       path.resolve("h5p/core"),
       path.resolve("h5p/editor"),
@@ -92,16 +100,16 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
   // The LibraryAdministrationExpress routes are REST endpoints that offer library
   // management functionality.
   app.use(
-      `${h5pEditor.config.baseUrl}/libraries`,
-      H5P.adapters.LibraryAdministrationExpressRouter(h5pEditor)
+    `${h5pEditor.config.baseUrl}/libraries`,
+    libraryAdministrationExpressRouter(h5pEditor)
   );
 
   // The ContentTypeCacheExpress routes are REST endpoints that allow updating
   // the content type cache manually.
   app.use(
-      `${h5pEditor.config.baseUrl}/content-type-cache`,
-      H5P.adapters.ContentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
-  );
+    `${h5pEditor.config.baseUrl}/content-type-cache`,
+    contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
+  );  
 
   app.get("/h5p", h5pRender.render(h5pEditor));
 });

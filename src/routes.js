@@ -20,7 +20,7 @@ exports.routes = () => {
         ltiConsumer: req.session.ltiConsumer,
         userId: req.session.userId,
         isTutor: req.session.isTutor,
-        context_id: req.session.context_id
+        context_id: req.session.context_id,
       });
     } else {
       const error =
@@ -33,7 +33,9 @@ exports.routes = () => {
 
   // Admin start page that shows a link to launch in a new window
   router.get("/adminstart", async (req, res) => {
-    res.send("<p style='text-align:center;'><a href='/h5p/new' target='_blank'>Open editor in new window</a></p>")
+    res.send(
+      "<p style='text-align:center;'><a href='/h5p/new' target='_blank'>Open editor in new window</a></p>"
+    );
   });
 
   // Route for launching LTI authentication and creating the provider instance
@@ -48,7 +50,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     try {
       const h5pPage = await h5pPlayer
         .setRenderer(player.model(req.session))
-        .render(req.params.contentId);
+        .render(req.params.contentId, req.user);
       res.send(h5pPage);
       res.status(200).end();
     } catch (error) {
@@ -72,7 +74,8 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       .setRenderer(editor.model)
       .render(
         req.params.contentId,
-        languageOverride === "auto" ? req.language ?? "en" : languageOverride
+        languageOverride === "auto" ? req.language ?? "en" : languageOverride,
+        req.user
       );
     res.send(page);
     res.status(200).end();
@@ -101,7 +104,8 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       .setRenderer(editor.model)
       .render(
         undefined,
-        languageOverride === "auto" ? req.language ?? "en" : languageOverride
+        languageOverride === "auto" ? req.language ?? "en" : languageOverride,
+        req.user
       );
     res.send(page);
     res.status(200).end();
