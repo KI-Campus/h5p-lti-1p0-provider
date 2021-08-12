@@ -44,8 +44,12 @@ exports.model = session => model =>
           <code>exercise=${model.contentId}</code>`
           }
           <p>
-            <a class="btn btn-secondary" title="Back" type="button" href="/h5p" style="margin:0px;">Back</a>
+            <a class="btn btn-secondary" title="Edit this exercise" type="button" href="/h5p/edit/${model.contentId}" style="margin:0px;">Edit exercise</a>
           </p>
+          <p>
+            <a class="btn btn-secondary" title="List all exercises" type="button" href="/h5p" style="margin:0px;">List all exercises</a>
+          </p>
+
           </div>`
           : ""
       }
