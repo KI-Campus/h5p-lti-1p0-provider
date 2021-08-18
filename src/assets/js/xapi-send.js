@@ -20,6 +20,12 @@ var xAPICompleteListener = function (event) {
     };
     request.send();
   }
+
+  // Send xAPI data to LRS
+  var request_lrs = new XMLHttpRequest();
+  request_lrs.open("POST", '../send_to_lrs', true);
+  request_lrs.setRequestHeader("Content-Type", "application/json");
+  request_lrs.send(JSON.stringify(event));
 };
 
 if (H5P) {
