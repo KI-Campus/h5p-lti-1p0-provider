@@ -17,7 +17,6 @@ exports.render = editor => {
             <meta charset="utf-8">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" crossorigin="anonymous">
-            <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
             <title>Course H5P Library</title>
         </head>
         <body>
@@ -57,7 +56,7 @@ exports.render = editor => {
                                             </div>
                                             <div class="mr-2 copyTextClass" style="margin-top:-4px">
                                                 <input readonly="readonly" id="text${content.id}" value="exercise=${content.id}">
-	                                              <button class="copy" data-clipboard-target="#text${content.id}" title="Copy exercise expression">
+	                                              <button onclick="copyText('exercise=${content.id}');" class="copy" title="Copy exercise expression">
 		                                              <span class="fa fa-copy"></span>
 		                                              Copy
 	                                              </button>
@@ -89,9 +88,10 @@ exports.render = editor => {
                 </div>
             </div>
             <script>
-              // Clipboard JS init and binding
-              var btns = document.querySelectorAll('button.copy');
-              var clipboard = new ClipboardJS(btns);
+            function copyText(text)
+            {
+                navigator.clipboard.writeText(text);
+            }
             </script>
             </body>
         `);
