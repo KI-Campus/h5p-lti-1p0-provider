@@ -198,9 +198,9 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
             req.session.userId,
           */
           let encryptedSession = { ...req.session }
-          encryptedSession.email ? require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") : undefined;
-          encryptedSession.username ? require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") : undefined;
-          encryptedSession.userId ? require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") : undefined;
+          if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
+          if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
+          if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
 
           const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
           res.status(200).end();
