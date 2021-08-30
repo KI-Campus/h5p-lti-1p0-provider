@@ -179,7 +179,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       // Create a asyn function for axios
       const sendPostRequest = async () => {
         try {
-          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: sessionData, createdAt: new Date() } })
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: req.session, createdAt: new Date() } })
           res.status(200).end();
         } catch (err) {
           // Handle Error Here
