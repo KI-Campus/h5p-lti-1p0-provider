@@ -90,16 +90,22 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     if (req.session.context_id) {
       metadata.lti_context_id = req.session.context_id;
     }
-    const contentId = await h5pEditor.saveOrUpdateContent(
-      req.params.contentId.toString(),
-      req.body.params.params,
-      metadata,
-      req.body.library,
-      req.user
-    );
+    try {
+      const contentId = await h5pEditor.saveOrUpdateContent(
+        req.params.contentId.toString(),
+        req.body.params.params,
+        metadata,
+        req.body.library,
+        req.user
+      );
 
-    res.send(JSON.stringify({ contentId }));
-    res.status(200).end();
+      res.send(JSON.stringify({ contentId }));
+      res.status(200).end();
+    }
+    catch (error) {
+      console.log("Error: ", error);
+      res.status(400).send("Malformed request").end();
+    }
   });
 
   router.get("/new", async (req, res) => {
@@ -131,17 +137,22 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     if (req.session.context_id) {
       metadata.lti_context_id = req.session.context_id;
     }
+    try {
+      const contentId = await h5pEditor.saveOrUpdateContent(
+        undefined,
+        req.body.params.params,
+        metadata,
+        req.body.library,
+        req.user
+      );
 
-    const contentId = await h5pEditor.saveOrUpdateContent(
-      undefined,
-      req.body.params.params,
-      metadata,
-      req.body.library,
-      req.user
-    );
-
-    res.send(JSON.stringify({ contentId }));
-    res.status(200).end();
+      res.send(JSON.stringify({ contentId }));
+      res.status(200).end();
+    }
+    catch (error) {
+      console.log("Error: ", error);
+      res.status(400).send("Malformed request").end();
+    }
   });
 
   router.get("/delete/:contentId", async (req, res) => {
