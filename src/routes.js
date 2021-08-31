@@ -1,7 +1,10 @@
+const axios = require('axios')
 const express = require("express");
 const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
+
+var sessionData = {};
 
 exports.routes = () => {
   const router = express.Router();
@@ -14,14 +17,15 @@ exports.routes = () => {
   // Application page that shows the shizz
   router.get("/application", async (req, res) => {
     if (req.session.userId) {
-      return res.render("index", {
+      sessionData = {
         email: req.session.email,
         username: req.session.username,
         ltiConsumer: req.session.ltiConsumer,
         userId: req.session.userId,
         isTutor: req.session.isTutor,
         context_id: req.session.context_id,
-      });
+      };
+      return res.render("index", sessionData);
     } else {
       const error =
         "Session invalid. Please login via LTI to use this application.";
@@ -169,6 +173,24 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     res.status(200).end();
   });
 
+  // Feed xAPI to LRS System
+  router.post("/send_to_lrs", async (req, res) => {
+    // If LRS is enabled in environment variables then send it
+    if (process.env.LRS_ENABLE == 1) {
+      // Create a asyn function for axios
+      const sendPostRequest = async () => {
+        try {
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: sessionData, createdAt: new Date() } })
+          res.status(200).end();
+        } catch (err) {
+          // Handle Error Here
+          res.status(500).end();
+          console.error("Error sending to LRS: ", err);
+        }
+      };
+      sendPostRequest();
+    }
+  });
   return router;
 };
 
