@@ -51,6 +51,7 @@ This application performs a number of functions:
 - [x] Specify custom H5P CSS file
 - [x] Serve H5P activities as an LTI Provider
 - [x] Send grades back to LTI Consumer
+- [x] Send xAPI data to LRS
 
 The scores in HPI do not go down
 
@@ -93,6 +94,18 @@ MONGODB_USER={{mongodbuser}}
 MONGODB_PASSWORD={{mongodbpass}}
 ```
 
+## Learning Record Store
+This LTI Provider/Tool can be used with an existing Learning Record Store (LRS). LRS is defined as:
+> The LRS is the heart of any xAPI ecosystem, receiving, storing and returning xAPI statements. You’ll need an LRS in order to do anything with xAPI. Every other tool which sends or retrieves learning activity data will interact with the LRS as the central store.
+
+For more information please refer to [xAPI.com](https://xapi.com/learning-record-store/)
+
+### Configuration
+To enable LRS following variables are added to the env file:
+```
+LRS_ENABLE={{0 or 1}}
+LRS_URL=http://{{your-lrs-host}}:{{lrs-port}}/{{lrs-path}}
+```
 ## Testing
 
  - Some tests under /tests
