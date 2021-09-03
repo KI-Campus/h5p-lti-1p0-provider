@@ -192,7 +192,17 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       // Create a asyn function for axios
       const sendPostRequest = async () => {
         try {
-          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: req.session, createdAt: new Date() } })
+          // Encrypt personal information before sending it to LRS
+          /* Following personal data will be encrypted
+            req.session.email,
+            req.session.username,
+            req.session.userId,
+          */
+          let encryptedSession = { ...req.session };
+          if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
+          if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
+          if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
           res.status(200).end();
         } catch (err) {
           // Handle Error Here
