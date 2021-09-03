@@ -4,9 +4,11 @@ const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
 
-var sessionData = {};
+
 
 exports.routes = () => {
+  let sessionData = {};
+
   const router = express.Router();
 
   // Basic up page
