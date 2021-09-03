@@ -212,6 +212,10 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       };
       sendPostRequest();
     }
+    else {
+      // Send status 200 even if the LRS is not enabled so that the browser doesn't show request timeouts
+      res.status(200).end();
+    }
   });
   return router;
 };
