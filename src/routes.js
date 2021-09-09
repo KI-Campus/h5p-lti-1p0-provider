@@ -4,9 +4,11 @@ const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
 
-var sessionData = {};
+
 
 exports.routes = () => {
+  let sessionData = {};
+
   const router = express.Router();
 
   // Basic up page
@@ -91,16 +93,21 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     if (req.session.context_id) {
       metadata.lti_context_id = req.session.context_id;
     }
-    const contentId = await h5pEditor.saveOrUpdateContent(
-      req.params.contentId.toString(),
-      req.body.params.params,
-      metadata,
-      req.body.library,
-      req.user
-    );
-
-    res.send(JSON.stringify({ contentId }));
-    res.status(200).end();
+    try {
+      const contentId = await h5pEditor.saveOrUpdateContent(
+        req.params.contentId.toString(),
+        req.body.params.params,
+        metadata,
+        req.body.library,
+        req.user
+      );
+      res.send(JSON.stringify({ contentId }));
+      res.status(200).end();
+    }
+    catch (error) {
+      console.log("Error: ", error);
+      res.status(400).send("Malformed request").end();
+    }
   });
 
   router.get("/new", async (req, res) => {
@@ -132,17 +139,22 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     if (req.session.context_id) {
       metadata.lti_context_id = req.session.context_id;
     }
+    try {
+      const contentId = await h5pEditor.saveOrUpdateContent(
+        undefined,
+        req.body.params.params,
+        metadata,
+        req.body.library,
+        req.user
+      );
 
-    const contentId = await h5pEditor.saveOrUpdateContent(
-      undefined,
-      req.body.params.params,
-      metadata,
-      req.body.library,
-      req.user
-    );
-
-    res.send(JSON.stringify({ contentId }));
-    res.status(200).end();
+      res.send(JSON.stringify({ contentId }));
+      res.status(200).end();
+    }
+    catch (error) {
+      console.log("Error: ", error);
+      res.status(400).send("Malformed request").end();
+    }
   });
 
   router.get("/delete/:contentId", async (req, res) => {
@@ -180,7 +192,17 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       // Create a asyn function for axios
       const sendPostRequest = async () => {
         try {
-          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: sessionData, createdAt: new Date() } })
+          // Encrypt personal information before sending it to LRS
+          /* Following personal data will be encrypted
+            req.session.email,
+            req.session.username,
+            req.session.userId,
+          */
+          let encryptedSession = { ...req.session };
+          if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
+          if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
+          if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
           res.status(200).end();
         } catch (err) {
           // Handle Error Here
@@ -189,6 +211,10 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
         }
       };
       sendPostRequest();
+    }
+    else {
+      // Send status 200 even if the LRS is not enabled so that the browser doesn't show request timeouts
+      res.status(200).end();
     }
   });
   return router;

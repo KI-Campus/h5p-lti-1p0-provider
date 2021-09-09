@@ -55,8 +55,8 @@ exports.render = editor => {
                                                 ${content.id}
                                             </div>
                                             <div class="mr-2 copyTextClass" style="margin-top:-4px">
-                                                <input readonly="readonly" id="text${content.id}" value="exercise=${content.id}">
-	                                              <button onclick="copyText('exercise=${content.id}');" class="copy" title="Copy exercise expression">
+                                                <input readonly="readonly" id="text_${content.id}" value="exercise=${content.id}">
+	                                              <button onclick="copyText('exercise=${content.id}', ${content.id});" class="copy" title="Copy exercise expression">
 		                                              <span class="fa fa-copy"></span>
 		                                              Copy
 	                                              </button>
@@ -88,9 +88,17 @@ exports.render = editor => {
                 </div>
             </div>
             <script>
-            function copyText(text)
+            function copyText(text, id)
             {
-                navigator.clipboard.writeText(text);
+                navigator.clipboard.writeText(text).then(function() {
+                    // Clipboard successfully set
+                    // Give a feedback to the user by selecting all copy text
+                    let textElement = document.getElementById('text_' + id);
+                    textElement.select();
+                  }, function() {
+                    // Clipboard write failed
+                    // TODO: Show failure to copy somewhere
+                  });
             }
             </script>
             </body>
