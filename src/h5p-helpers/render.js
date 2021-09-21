@@ -56,7 +56,7 @@ exports.render = editor => {
                                             </div>
                                             <div class="mr-2 copyTextClass" style="margin-top:-4px">
                                                 <input readonly="readonly" id="text_${content.id}" value="exercise=${content.id}">
-	                                              <button onclick="copyText('exercise=${content.id}', ${content.id});" class="copy" title="Copy exercise expression">
+	                                              <button onclick="copyText('exercise=${content.id}', '${content.id}');" class="btn btn-link copy" title="Copy exercise expression">
 		                                              <span class="fa fa-copy"></span>
 		                                              Copy
 	                                              </button>
