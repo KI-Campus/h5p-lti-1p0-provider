@@ -204,7 +204,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
           if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
           if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
           const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
-          res.status(200).end();
+          res.status(200).send(JSON.stringify({ result: "sent to LRS" })).end();
         } catch (err) {
           // Handle Error Here
           res.status(500).end();
