@@ -32,6 +32,7 @@ exports.routes = () => {
       const error =
         "Session invalid. Please login via LTI to use this application.";
       console.log(error);
+      console.log("session data: ", req.session);
       res.status(403).send(error);
       return;
     }
