@@ -66,7 +66,7 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
     h5pConfig,
     undefined,
     undefined,
-    { customization: { global: { scripts: ["/assets/js/xapi-send.js"] } } }
+    { customization: { global: { scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"] } } }
   );
   app.use(
     fileUpload({
@@ -109,7 +109,7 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
   app.use(
     `${h5pEditor.config.baseUrl}/content-type-cache`,
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
-  );  
+  );
 
   app.get("/h5p", h5pRender.render(h5pEditor));
 });
