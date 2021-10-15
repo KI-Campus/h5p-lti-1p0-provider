@@ -62,6 +62,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     } catch (error) {
       res.status(500).end(error.message);
+      console.log(error);
     }
   });
 
@@ -106,7 +107,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
     catch (error) {
-      console.log("Error: ", error);
+      console.log("Error in route /edit ", error);
       res.status(400).send("Malformed request").end();
     }
   });
@@ -153,7 +154,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
     catch (error) {
-      console.log("Error: ", error);
+      console.log("Error in route /new ", error);
       res.status(400).send("Malformed request").end();
     }
   });
@@ -176,6 +177,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.send(
         `Error deleting content with id ${req.params.contentId}: ${error.message}<br/><a href="javascript:window.location=document.referrer">Go Back</a>`
       );
+      console.log("Error in route /delete ", error);
       res.status(500).end();
       return;
     }
