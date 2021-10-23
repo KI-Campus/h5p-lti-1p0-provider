@@ -88,42 +88,42 @@ const createH5PEditor = async (
     process.env.CONTENTSTORAGE !== "mongos3"
       ? new H5P.fsImplementations.FileContentStorage(localContentPath)
       : new dbImplementations.MongoS3ContentStorage(
-          dbImplementations.initS3({
-            s3ForcePathStyle: true,
-            signatureVersion: "v4",
-          }),
-          (await dbImplementations.initMongo()).collection(
-            process.env.CONTENT_MONGO_COLLECTION
-          ),
-          {
-            s3Bucket: process.env.CONTENT_AWS_S3_BUCKET,
-            maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
-              ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
-              : undefined,
-            getPermissions: (contentId, user) => {
-              if (user && user.isTutor) {
-                return tutorPermissions;
-              }
-              return learnerPermissions;
-            },
-          }
+        dbImplementations.initS3({
+          s3ForcePathStyle: true,
+          signatureVersion: "v4",
+        }),
+        (await dbImplementations.initMongo()).collection(
+          process.env.CONTENT_MONGO_COLLECTION
         ),
+        {
+          s3Bucket: process.env.CONTENT_AWS_S3_BUCKET,
+          maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
+            ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
+            : undefined,
+          getPermissions: (contentId, user) => {
+            if (user && user.isTutor) {
+              return tutorPermissions;
+            }
+            return learnerPermissions;
+          },
+        }
+      ),
     process.env.TEMPORARYSTORAGE === "s3"
       ? new dbImplementations.S3TemporaryFileStorage(
-          dbImplementations.initS3({
-            s3ForcePathStyle: true,
-            signatureVersion: "v4",
-          }),
-          {
-            s3Bucket: process.env.TEMPORARY_AWS_S3_BUCKET,
-            maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
-              ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
-              : undefined,
-          }
-        )
+        dbImplementations.initS3({
+          s3ForcePathStyle: true,
+          signatureVersion: "v4",
+        }),
+        {
+          s3Bucket: process.env.TEMPORARY_AWS_S3_BUCKET,
+          maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
+            ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
+            : undefined,
+        }
+      )
       : new H5P.fsImplementations.DirectoryTemporaryFileStorage(
-          localTemporaryPath
-        ),
+        localTemporaryPath
+      ),
     translationCallback,
     undefined,
     {
@@ -182,5 +182,15 @@ exports.getH5PStuff = async () => {
       return translationFunction(key, { lng: language });
     }
   );
-  return { h5pConfig, h5pEditor };
+
+  const h5pPlayer = new H5P.H5PPlayer(
+    h5pEditor.libraryStorage,
+    h5pEditor.contentStorage,
+    h5pConfig,
+    undefined,
+    undefined,
+    (key, language) => translationFunction(key, { lng: language }),
+    { customization: { global: { scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"] } } },
+  );
+  return { h5pConfig, h5pEditor, h5pPlayer };
 };
