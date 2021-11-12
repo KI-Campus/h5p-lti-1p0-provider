@@ -2,16 +2,16 @@ exports.model = model => `<html style="max-width: inherit;">
 <head>
 <meta charset="UTF-8">
 <script> window.H5PIntegration = parent.H5PIntegration || ${JSON.stringify(
-  model.integration,
-  null,
-  2
+    model.integration,
+    null,
+    2
 )}</script>
 ${model.styles
-  .map(style => `<link rel="stylesheet" href="${style}">`)
-  .join("\n    ")}
+        .map(style => `<link rel="stylesheet" href="${style}">`)
+        .join("\n    ")}
 ${model.scripts
-  .map(script => `<script src="${script}"></script>`)
-  .join("\n    ")}
+        .map(script => `<script src="${script}"></script>`)
+        .join("\n    ")}
 </head>
 <body style="max-width: inherit;">
 <form method="post" enctype="multipart/form-data" id="h5p-content-form" style="margin:0 auto; max-width:900px;">
@@ -154,7 +154,37 @@ var ns = H5PEditor;
         return url;
     };
     $(document).ready(H5PEditor.init);
+    
 })(H5P.jQuery);
 </script>
+
+<script>
+
+let checkButton;
+let checkButtonDiv;
+
+var checkButtonTimer;
+
+// Look for check button and hide it
+checkButtonTimer = setInterval( ()=> {
+    // Find Check button from the editor 
+    checkButtonDiv = document.getElementsByTagName("iframe")[0].contentDocument.querySelector('body > div > div.h5peditor-form.h5peditor-form-manager > div.tree > fieldset.field.group.importance-low.field-name-override.expanded > div.content > div.field.field-name-checkButton.boolean.importance-low');
+    checkButton = document.getElementsByTagName("iframe")[0].contentDocument.querySelector('#field-checkbutton-69');
+    if (checkButtonDiv && checkButton)
+    {
+        // First make sure it is checked
+        checkButton.checked = true;
+
+        // Hide it
+        checkButtonDiv.style.display = "none";
+
+        // Stop the timer
+        clearInterval (checkButtonTimer);
+    }
+}, 500 );
+  
+
+</script>
+
 </body>
 </html>`;
