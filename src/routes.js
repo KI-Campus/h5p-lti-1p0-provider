@@ -4,6 +4,7 @@ const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
 
+const expressSession = require("express-session");
 
 
 exports.routes = () => {
@@ -205,7 +206,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
           if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
           if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
           if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
-          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, session_extra: expressSession, createdAt: new Date() } })
           res.status(200).send(JSON.stringify({ result: "sent to LRS" })).end();
         } catch (err) {
           // Handle Error Here
