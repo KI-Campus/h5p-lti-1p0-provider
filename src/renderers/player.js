@@ -33,11 +33,11 @@ exports.model = session => model =>
       ${session.isTutor
     ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>
           <p>You are seeing this message because you are logged in as an instructor</p>
-          ${session.custom_consumer == "HPI" &&
-    `<p>To embed insert this into your
-          KI Campus course, edit the "Additional parameters for this exercise" to contain this:</p>
-          <code>exercise=${model.contentId}</code>`
-    }
+          
+    <p>To embed insert this into your
+          ${session.custom_consumer} course, edit the "Additional parameters for this exercise" to contain this:</p>
+          <code>exercise=${model.contentId}</code>
+    
           <p>
             <a class="btn btn-secondary" title="Edit exercise" type="button" href="/h5p/edit/${model.contentId}" style="margin:0px;" target="_blank">Edit exercise</a>
           </p>
