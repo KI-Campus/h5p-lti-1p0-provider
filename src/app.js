@@ -18,6 +18,8 @@ const h5pInstance = require("./h5p-helpers/instance");
 const h5pRender = require("./h5p-helpers/render");
 const streaming = require("./streaming/middleware");
 
+const VERSION = require('../src/server.js').VERSION;
+
 const {
   h5pAjaxExpressRouter,
   libraryAdministrationExpressRouter,
@@ -107,6 +109,7 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor, h5pPlayer }) => {
     `${h5pEditor.config.baseUrl}/content-type-cache`,
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
+  h5pConfig.VERSION = VERSION;
 
   app.get("/h5p", h5pRender.render(h5pEditor));
 });

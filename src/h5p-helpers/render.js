@@ -1,16 +1,16 @@
 exports.render = editor => {
-  return async (req, res) => {
-    const contentIds = await editor.contentManager.listContent();
-    const contentObjects = await Promise.all(
-      contentIds.map(async id => ({
-        content: await editor.contentManager.getContentMetadata(id, req.user),
-        id
-      }))
-    );
-    const filteredContentObjects = contentObjects.filter(
-      content => content.content.lti_context_id === req.session.context_id
-    );
-    res.send(`
+    return async (req, res) => {
+        const contentIds = await editor.contentManager.listContent();
+        const contentObjects = await Promise.all(
+            contentIds.map(async id => ({
+                content: await editor.contentManager.getContentMetadata(id, req.user),
+                id
+            }))
+        );
+        const filteredContentObjects = contentObjects.filter(
+            content => content.content.lti_context_id === req.session.context_id
+        );
+        res.send(`
         <!doctype html>
         <html>
         <head>
@@ -23,23 +23,23 @@ exports.render = editor => {
             <div class="container" style="margin-top:60px;">
                 <h1>Course H5P Library</h1>
                 ${req.session.context_title
-        ? `<div class="alert alert-warning">
+                ? `<div class="alert alert-warning">
                       Content shown only for the course: 
                       ${req.session.context_title}
                     </div>`
-        : ""
-      }
+                : ""
+            }
                 <a class="btn btn-primary my-2" href="${editor.config.baseUrl
-      }/new" target="_blank"><span class="fa fa-plus-circle m-2"></span>Create new content</a>
+            }/new" target="_blank"><span class="fa fa-plus-circle m-2"></span>Create new content</a>
                 ${filteredContentObjects.length == 0
-        ? "<h4 style='margin:30px 0'>There's no H5P content for this course yet</h4>"
-        : "<h2 style='margin: 30px 0'>Existing content</h2>"
-      }
+                ? "<h4 style='margin:30px 0'>There's no H5P content for this course yet</h4>"
+                : "<h2 style='margin: 30px 0'>Existing content</h2>"
+            }
                 <div class="list-group">
                 ${filteredContentObjects
-        .map(
-          content =>
-            `<div class="list-group-item">
+                .map(
+                    content =>
+                        `<div class="list-group-item">
                                 <div class="d-flex w-10">
                                     <div class="mr-auto p-2 align-self-center">
                                         <a href="${editor.config.baseUrl}${editor.config.playUrl}/${content.id}">
@@ -83,8 +83,12 @@ exports.render = editor => {
                                     </div>
                                 </div>                                
                             </div>`
-        )
-        .join("")}
+                )
+                .join("")}
+                </div>
+
+                <div>
+                    <h6>Version: ${editor.config.VERSION}</h6>
                 </div>
             </div>
             <script>
@@ -103,5 +107,5 @@ exports.render = editor => {
             </script>
             </body>
         `);
-  };
+    };
 };
