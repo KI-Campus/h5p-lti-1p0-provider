@@ -24,7 +24,7 @@ exports.model = session => model =>
   }
 </head>
 <body>
-    <div class="kiron-h5p-container" style="max-width:900px; margin:0 auto; padding:40px 10px; position:relative;">
+    <div class="kiron-h5p-container" style="max-width:900px; margin:0 auto; padding:0px 0px; position:relative;">
       <div class="h5p-content" data-content-id="${model.contentId}"></div>
       ${session.custom_message
     ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>${session.custom_message}</div>`
