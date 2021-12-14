@@ -6,6 +6,21 @@ const editor = require("./renderers/editor");
 
 const expressSession = require("express-session");
 
+const { MongoClient } = require("mongodb");
+
+var mongoClient = new MongoClient(process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/h5p", { useUnifiedTopology: true });
+
+// Async function to connect to MongoDB and initiaize variables for db and collection
+async function connectMongo() {
+  try {
+    await mongoClient.connect();
+    console.log("Native MongoDB Driver connected");
+  } catch (err) {
+    console.log("Error connecting to Mongo Server: ", err);
+  }
+}
+connectMongo();
+
 
 exports.routes = () => {
   let sessionData = {};
@@ -221,6 +236,19 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
   });
+
+  // Fetch configuration from MongoDB. This will be used to get all the exercises that need to be hidden in the editor
+  router.get("/getconfig", async (req, res) => {
+    mongoClient.db().collection("config").findOne({}, (err, result) => {
+      if (!err) {
+        res.status(200).send(JSON.stringify({ success: true, result: JSON.stringify(result) })).end();
+      }
+      else {
+        res.status(500).end();
+      }
+    });
+  });
+
   return router;
 };
 

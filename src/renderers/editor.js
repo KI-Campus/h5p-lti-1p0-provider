@@ -183,36 +183,6 @@ checkButtonTimer = setInterval( ()=> {
     }
 }, 500 );
   
-
-// Hide certain exercises
-
-let foundContentTypeList = false;
-let hideExercisesTimer;
-
-let hideExercises = ["h5p-interactivevideo", "h5p-coursepresentation"];
-
-
-
-
-
-hideExercisesTimer = setInterval ( ()=> {
-    var container = document.getElementsByTagName("iframe")[0].contentDocument.getElementsByClassName("content-type-list")[0];
-    
-    if (container) {
-        let listOfExercises = container.children[0];
-        // Loop through listOfExercises and hide the ones we want
-        for (let i = 0; i < listOfExercises.children.length; i++) {
-            let exercise = listOfExercises.children[i];
-            for (let j = 0; j < hideExercises.length; j++) {
-                if (exercise.id==hideExercises[j]) {
-                    exercise.style.display = "none";
-                }
-            }
-        }
-        clearInterval (hideExercisesTimer);
-    }
-}, 200 );
-
 </script>
 
 </body>

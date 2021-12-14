@@ -6,6 +6,8 @@ const fs = require("fs");
 const app = require("./app");
 const router = require("./routes");
 
+
+
 const matchesDisallowedStudentPaths = path => {
   return (
     path.match("/h5p/edit/.*") ||

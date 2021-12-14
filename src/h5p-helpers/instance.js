@@ -129,6 +129,7 @@ const createH5PEditor = async (
     {
       enableHubLocalization: true,
       enableLibraryNameLocalization: true,
+      customization: { global: { scripts: ["/assets/js/hide-libraries.js"] } },
     }
   );
   // Set bucket lifecycle configuration for S3 temporary storage to make
