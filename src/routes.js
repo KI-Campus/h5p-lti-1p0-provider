@@ -8,7 +8,7 @@ const expressSession = require("express-session");
 
 const { MongoClient } = require("mongodb");
 
-var mongoClient = new MongoClient(process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/h5p", { useUnifiedTopology: true });
+var mongoClient = new MongoClient(process.env.MONGO_COMPLETE_URL || "mongodb://127.0.0.1:27017/h5p", { useUnifiedTopology: true });
 
 // Async function to connect to MongoDB and initiaize variables for db and collection
 async function connectMongo() {
@@ -244,6 +244,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
         res.status(200).send(JSON.stringify({ success: true, result: JSON.stringify(result) })).end();
       }
       else {
+        console.log("Error in route /getconfig ", err);
         res.status(500).end();
       }
     });
