@@ -191,7 +191,7 @@ exports.getH5PStuff = async () => {
     undefined,
     undefined,
     (key, language) => translationFunction(key, { lng: language }),
-    { customization: { global: { scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"] } } },
+    { customization: { global: { styles: ["/assets/css/base.css"], scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"] } } },
   );
   return { h5pConfig, h5pEditor, h5pPlayer };
 };
