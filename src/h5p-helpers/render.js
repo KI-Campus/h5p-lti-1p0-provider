@@ -68,14 +68,12 @@ exports.render = editor => {
                                             <span class="fa fa-pencil-alt m-1"></span>
                                             edit
                                         </a>
-                                    </div>
-                                    <div class="p-2">
+                                
                                         <a class="btn btn-info" href="${editor.config.baseUrl}${editor.config.downloadUrl}/${content.id}">
                                             <span class="fa fa-file-download m-1"></span>
                                             download
                                         </a>
-                                    </div>
-                                    <div class="p-2">
+                                  
                                         <a class="btn btn-danger" href="${editor.config.baseUrl}/delete/${content.id}">
                                             <span class="fa fa-trash-alt m-1"></span>
                                             delete
