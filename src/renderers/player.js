@@ -45,7 +45,7 @@ exports.model = session => model =>
             <a class="btn btn-secondary" title="List all exercises in this course" type="button" href="/h5p" style="margin:0px;" target="_blank">List all exercises</a>
           </p>
 
-          </div><br><div>Consumer: ${session.custom_consumer}</div>`
+          </div><br><div style="display:none">Consumer: ${session.custom_consumer}</div>`
 
     : ""
   }
