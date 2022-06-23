@@ -20,16 +20,20 @@ const tutorPermissions = [
 ];
 
 const addMoreTagsInSemantics = (semantics) => {
+  console.log("addMoreTagsInSemantics executed");
   // Loop through semantics object and find field name tags, if found then push "table" in the array and do this recursively if any field name is an object
   const newSemantics = { ...semantics };
   for (const key in newSemantics) {
     if (newSemantics[key].tags) {
       newSemantics[key].tags.push("table");
+      newSemantics[key].tags.push("hr");
+      console.log("Altering library");
     }
     if (typeof (newSemantics[key]) === "object") {
       newSemantics[key] = addMoreTagsInSemantics(newSemantics[key]);
     }
   }
+
   return semantics;
 }
 
