@@ -25,6 +25,10 @@ const addMoreTagsInSemantics = (semantics) => {
   for (const key in newSemantics) {
     if (newSemantics[key].tags) {
       newSemantics[key].tags.push("table");
+      newSemantics[key].tags.push("ul");
+      newSemantics[key].tags.push("ol");
+      newSemantics[key].tags.push("hr");
+      newSemantics[key].tags.push("br");
     }
     if (typeof (newSemantics[key]) === "object") {
       newSemantics[key] = addMoreTagsInSemantics(newSemantics[key]);
