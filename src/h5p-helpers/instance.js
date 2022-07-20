@@ -19,6 +19,31 @@ const tutorPermissions = [
   Permission.View,
 ];
 
+const addMoreTagsInSemantics = (semantics) => {
+  // Loop through semantics object and find field name tags, if found then push "table" in the array and do this recursively if any field name is an object
+  const newSemantics = { ...semantics };
+  for (const key in newSemantics) {
+    if (newSemantics[key].tags) {
+      newSemantics[key].tags.push("table");
+      newSemantics[key].tags.push("ul");
+      newSemantics[key].tags.push("ol");
+      newSemantics[key].tags.push("hr");
+      newSemantics[key].tags.push("br");
+    }
+    if (typeof (newSemantics[key]) === "object") {
+      newSemantics[key] = addMoreTagsInSemantics(newSemantics[key]);
+    }
+  }
+  return semantics;
+}
+
+const alterLibrarySemanticsHook = (
+  library,
+  semantics,
+) => {
+  return addMoreTagsInSemantics(semantics);
+};
+
 const createH5PEditor = async (
   config,
   localLibraryPath,
@@ -82,6 +107,7 @@ const createH5PEditor = async (
   const h5pEditor = new H5P.H5PEditor(
     new H5P.cacheImplementations.CachedKeyValueStorage("kvcache", cache),
     config,
+
     process.env.CACHE
       ? new H5P.cacheImplementations.CachedLibraryStorage(libraryStorage, cache)
       : libraryStorage,
@@ -129,7 +155,10 @@ const createH5PEditor = async (
     {
       enableHubLocalization: true,
       enableLibraryNameLocalization: true,
-      customization: { global: { scripts: ["/assets/js/hide-libraries.js"] } },
+      customization: {
+        alterLibrarySemantics: alterLibrarySemanticsHook,
+        global: { scripts: ["/assets/js/hide-libraries.js"] }
+      },
     }
   );
   // Set bucket lifecycle configuration for S3 temporary storage to make
