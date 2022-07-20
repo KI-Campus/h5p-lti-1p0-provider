@@ -18,6 +18,8 @@ const h5pInstance = require("./h5p-helpers/instance");
 const h5pRender = require("./h5p-helpers/render");
 const streaming = require("./streaming/middleware");
 
+const VERSION = require('../src/server.js').VERSION;
+
 const {
   h5pAjaxExpressRouter,
   libraryAdministrationExpressRouter,
@@ -28,7 +30,11 @@ const {
 const app = express();
 
 // use helmet to disable caching, sniffing, X-Powered-By, and a bunch of other stuff
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 // Use pug for templates
 app.set("view engine", "pug");
@@ -59,15 +65,8 @@ app.use(
 app.use(express.static(__dirname, [".well-known", "assets"]));
 
 // Set up all our h5p things...
-h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
-  const h5pPlayer = new H5P.H5PPlayer(
-    h5pEditor.libraryStorage,
-    h5pEditor.contentStorage,
-    h5pConfig,
-    undefined,
-    undefined,
-    { customization: { global: { scripts: ["/assets/js/xapi-send.js"] } } }
-  );
+h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor, h5pPlayer }) => {
+
   app.use(
     fileUpload({
       limits: { fileSize: h5pEditor.config.maxFileSize },
@@ -109,7 +108,8 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor }) => {
   app.use(
     `${h5pEditor.config.baseUrl}/content-type-cache`,
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
-  );  
+  );
+  h5pConfig.VERSION = VERSION;
 
   app.get("/h5p", h5pRender.render(h5pEditor));
 });

@@ -4,6 +4,22 @@ const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
 
+const expressSession = require("express-session");
+
+const { MongoClient } = require("mongodb");
+
+var mongoClient = new MongoClient(process.env.MONGO_COMPLETE_URL || "mongodb://127.0.0.1:27017/h5p", { useUnifiedTopology: true });
+
+// Async function to connect to MongoDB and initiaize variables for db and collection
+async function connectMongo() {
+  try {
+    await mongoClient.connect();
+    console.log("Native MongoDB Driver connected");
+  } catch (err) {
+    console.log("Error connecting to Mongo Server: ", err);
+  }
+}
+connectMongo();
 
 
 exports.routes = () => {
@@ -32,6 +48,7 @@ exports.routes = () => {
       const error =
         "Session invalid. Please login via LTI to use this application.";
       console.log(error);
+      console.log("session data: ", req.session);
       res.status(403).send(error);
       return;
     }
@@ -61,6 +78,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     } catch (error) {
       res.status(500).end(error.message);
+      console.log(error);
     }
   });
 
@@ -105,7 +123,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
     catch (error) {
-      console.log("Error: ", error);
+      console.log("Error in route /edit ", error);
       res.status(400).send("Malformed request").end();
     }
   });
@@ -152,7 +170,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
     catch (error) {
-      console.log("Error: ", error);
+      console.log("Error in route /new ", error);
       res.status(400).send("Malformed request").end();
     }
   });
@@ -175,6 +193,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.send(
         `Error deleting content with id ${req.params.contentId}: ${error.message}<br/><a href="javascript:window.location=document.referrer">Go Back</a>`
       );
+      console.log("Error in route /delete ", error);
       res.status(500).end();
       return;
     }
@@ -198,12 +217,17 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
             req.session.username,
             req.session.userId,
           */
+
           let encryptedSession = { ...req.session };
-          if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
-          if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
-          if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
-          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, createdAt: new Date() } })
-          res.status(200).end();
+          /*
+          // Disabling Encryption for now
+             if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
+             if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
+             if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
+           */
+
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, session_extra: expressSession, createdAt: new Date() } })
+          res.status(200).send(JSON.stringify({ result: "sent to LRS" })).end();
         } catch (err) {
           // Handle Error Here
           res.status(500).end();
@@ -217,6 +241,20 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       res.status(200).end();
     }
   });
+
+  // Fetch configuration from MongoDB. This will be used to get all the exercises that need to be hidden in the editor
+  router.get("/getconfig", async (req, res) => {
+    mongoClient.db().collection("config").findOne({}, (err, result) => {
+      if (!err) {
+        res.status(200).send(JSON.stringify({ success: true, result: JSON.stringify(result) })).end();
+      }
+      else {
+        console.log("Error in route /getconfig ", err);
+        res.status(500).end();
+      }
+    });
+  });
+
   return router;
 };
 
