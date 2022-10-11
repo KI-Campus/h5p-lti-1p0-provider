@@ -7,14 +7,14 @@ const providers = require("./get-providers");
 // Returns json {"success": boolean, "error": string, "result": boolean, "score": float}
 // The LTI Consumer is probably expecting a floating point number between 0 and 1.
 exports.sendOutcome = async (req, res) => {
-  if (!req.session.userId) {
+  if (!req.session.user_id) {
     return res.json({ success: false, error: "Invalid session" });
   }
   const provider = providers[req.session.id];
   if (!provider) {
     return res.json({
       success: false,
-      error: "Provider not found"
+      error: "Provider not found",
     });
   }
   const score = parseFloat(req.query.score) || 0;
@@ -29,7 +29,7 @@ exports.sendOutcome = async (req, res) => {
   } else {
     return res.json({
       success: false,
-      error: "No outcome service available for this provider"
+      error: "No outcome service available for this provider",
     });
   }
 };
