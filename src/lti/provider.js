@@ -38,6 +38,12 @@ exports.launch = async (req, res) => {
       return;
     }
     if (isValid) {
+      console.log("LTI launch request is valid");
+      console.log("req.session: ", req.session);
+      console.log("req.body: ", req.body);
+      console.log("req.query: ", req.query);
+      console.log("req.params: ", req.params);
+      console.log("provider: ", provider);
       req.session.regenerate(err => {
         if (err) {
           const error = `Something went wrong: ${err}`;
