@@ -6,8 +6,6 @@ const fs = require("fs");
 const app = require("./app");
 const router = require("./routes");
 
-
-
 const matchesDisallowedStudentPaths = path => {
   return (
     path.match("/h5p/edit/.*") ||
@@ -47,6 +45,8 @@ app.use((req, res, next) => {
       isTutor:
         process.env.NODE_ENV === "development" ? true : req.session.isTutor,
     };
+    console.log("middleware req.session: ", req.session);
+    console.log("middleware req.user: ", req.user);
 
     // If they aren't a tutor but they are logged in,
     // just keep sending them back to the same exercise...
