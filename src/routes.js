@@ -1,4 +1,4 @@
-const axios = require("axios");
+const axios = require('axios')
 const express = require("express");
 const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
@@ -8,10 +8,7 @@ const expressSession = require("express-session");
 
 const { MongoClient } = require("mongodb");
 
-var mongoClient = new MongoClient(
-  process.env.MONGO_COMPLETE_URL || "mongodb://127.0.0.1:27017/h5p",
-  { useUnifiedTopology: true }
-);
+var mongoClient = new MongoClient(process.env.MONGO_COMPLETE_URL || "mongodb://127.0.0.1:27017/h5p", { useUnifiedTopology: true });
 
 // Async function to connect to MongoDB and initiaize variables for db and collection
 async function connectMongo() {
@@ -23,6 +20,7 @@ async function connectMongo() {
   }
 }
 connectMongo();
+
 
 exports.routes = () => {
   let sessionData = {};
@@ -36,12 +34,12 @@ exports.routes = () => {
 
   // Application page that shows the shizz
   router.get("/application", async (req, res) => {
-    if (req.session.user_id) {
+    if (req.session.userId) {
       sessionData = {
         email: req.session.email,
         username: req.session.username,
         ltiConsumer: req.session.ltiConsumer,
-        user_id: req.session.user_id,
+        userId: req.session.userId,
         isTutor: req.session.isTutor,
         context_id: req.session.context_id,
       };
@@ -123,7 +121,8 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       );
       res.send(JSON.stringify({ contentId }));
       res.status(200).end();
-    } catch (error) {
+    }
+    catch (error) {
       console.log("Error in route /edit ", error);
       res.status(400).send("Malformed request").end();
     }
@@ -169,7 +168,8 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
 
       res.send(JSON.stringify({ contentId }));
       res.status(200).end();
-    } catch (error) {
+    }
+    catch (error) {
       console.log("Error in route /new ", error);
       res.status(400).send("Malformed request").end();
     }
@@ -215,7 +215,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
           /* Following personal data will be encrypted
             req.session.email,
             req.session.username,
-            req.session.user_id,
+            req.session.userId,
           */
 
           let encryptedSession = { ...req.session };
@@ -223,21 +223,11 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
           // Disabling Encryption for now
              if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }
              if (encryptedSession.username) { encryptedSession.username = require("crypto").createHash("sha256").update(encryptedSession.username).digest("hex") }
-             if (encryptedSession.user_id) { encryptedSession.user_id = require("crypto").createHash("sha256").update(encryptedSession.user_id).digest("hex") }
+             if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
            */
 
-          const resp = await axios.post(process.env.LRS_URL, {
-            xAPI: req.body.data.statement,
-            metadata: {
-              session: encryptedSession,
-              session_extra: expressSession,
-              createdAt: new Date(),
-            },
-          });
-          res
-            .status(200)
-            .send(JSON.stringify({ result: "sent to LRS" }))
-            .end();
+          const resp = await axios.post(process.env.LRS_URL, { xAPI: req.body.data.statement, metadata: { session: encryptedSession, session_extra: expressSession, createdAt: new Date() } })
+          res.status(200).send(JSON.stringify({ result: "sent to LRS" })).end();
         } catch (err) {
           // Handle Error Here
           res.status(500).end();
@@ -245,7 +235,8 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
         }
       };
       sendPostRequest();
-    } else {
+    }
+    else {
       // Send status 200 even if the LRS is not enabled so that the browser doesn't show request timeouts
       res.status(200).end();
     }
@@ -253,22 +244,15 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
 
   // Fetch configuration from MongoDB. This will be used to get all the exercises that need to be hidden in the editor
   router.get("/getconfig", async (req, res) => {
-    mongoClient
-      .db()
-      .collection("config")
-      .findOne({}, (err, result) => {
-        if (!err) {
-          res
-            .status(200)
-            .send(
-              JSON.stringify({ success: true, result: JSON.stringify(result) })
-            )
-            .end();
-        } else {
-          console.log("Error in route /getconfig ", err);
-          res.status(500).end();
-        }
-      });
+    mongoClient.db().collection("config").findOne({}, (err, result) => {
+      if (!err) {
+        res.status(200).send(JSON.stringify({ success: true, result: JSON.stringify(result) })).end();
+      }
+      else {
+        console.log("Error in route /getconfig ", err);
+        res.status(500).end();
+      }
+    });
   });
 
   return router;

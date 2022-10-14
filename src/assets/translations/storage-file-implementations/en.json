@@ -1,6 +1,6 @@
 {
     "error-generating-unique-temporary-filename": "Cannot determine a unique filename for {{name}}",
-    "temporary-file-not-found": "The file {{filename}} is not accessible for user {{user_id}} or does not exist.",
+    "temporary-file-not-found": "The file {{filename}} is not accessible for user {{userId}} or does not exist.",
     "add-file-content-not-found": "Cannot add file {{filename}} to content with id {{id}}: Content with does not exist.",
     "error-creating-content": "Could not create content.",
     "error-generating-content-id": "Could not generate id for new content.",
