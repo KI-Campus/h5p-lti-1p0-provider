@@ -240,6 +240,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
               session: encryptedSession,
               session_extra: expressSession,
               createdAt: new Date(),
+              reqUser: req.user,
             },
           });
 
