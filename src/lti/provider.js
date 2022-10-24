@@ -62,6 +62,13 @@ exports.launch = async (req, res) => {
         req.session.has_outcome_service = !!provider.outcome_service;
         req.session.has_ext_content = !!provider.ext_content;
         req.session.custom_style_url = req.body.custom_style_url;
+
+        req.session.lis_person_contact_email_primary =
+          req.body.lis_person_contact_email_primary;
+        req.session.lis_person_name_family = req.body.lis_person_name_family;
+        req.session.lis_person_name_full = req.body.lis_person_name_full;
+        req.session.lis_person_name_given = req.body.lis_person_name_given;
+
         // store provider in an object, we'll need it later for sending outcomes back to the consumer
         providers[req.session.id] = provider;
         // redirect
