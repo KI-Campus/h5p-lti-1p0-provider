@@ -45,6 +45,10 @@ exports.launch = async (req, res) => {
           res.status(403).send(error);
           return;
         }
+
+        console.log("provider: ", provider);
+        console.log("req.body: ", req.body);
+
         // Same some LTI Provider variables to the session
         req.session.userId = provider.userId;
         req.session.context_id = provider.context_id;

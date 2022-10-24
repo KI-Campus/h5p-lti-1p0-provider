@@ -28,7 +28,6 @@ app.use("/api/", router.apiroutes());
 // Set user permissions for H5P
 app.use((req, res, next) => {
   if (req.session.userId || process.env.NODE_ENV === "development") {
-    console.log("req.session: ", req.session);
     let userName;
     if (req.session?.lis_person_name_full) {
       userName = req.session.lis_person_name_full;
