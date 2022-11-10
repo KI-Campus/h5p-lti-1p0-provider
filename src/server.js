@@ -58,7 +58,7 @@ app.use((req, res, next) => {
         process.env.NODE_ENV === "development"
           ? "1"
           : String(req.session.userId),
-      name: userName,
+      name: req.session.userId ?? userName,
       canInstallRecommended:
         process.env.NODE_ENV === "development" ? true : req.session.isTutor,
       canUpdateAndInstallLibraries:
