@@ -19,7 +19,7 @@ const tutorPermissions = [
   Permission.View,
 ];
 
-const addMoreTagsInSemantics = (semantics) => {
+const addMoreTagsInSemantics = semantics => {
   // Loop through semantics object and find field name tags, if found then push "table" in the array and do this recursively if any field name is an object
   const newSemantics = { ...semantics };
   for (const key in newSemantics) {
@@ -30,17 +30,19 @@ const addMoreTagsInSemantics = (semantics) => {
       newSemantics[key].tags.push("hr");
       newSemantics[key].tags.push("br");
     }
-    if (typeof (newSemantics[key]) === "object") {
+    if (typeof newSemantics[key] === "object") {
       newSemantics[key] = addMoreTagsInSemantics(newSemantics[key]);
     }
   }
   return semantics;
-}
+};
 
-const alterLibrarySemanticsHook = (
-  library,
-  semantics,
-) => {
+const alterLibrarySemanticsHook = (library, semantics) => {
+  // Check if the library is H5P.Presentation then do not add more tags in semantics
+  if (library.machineName?.toLowerCase() === "h5p.coursepresentation") {
+    return semantics;
+  }
+
   return addMoreTagsInSemantics(semantics);
 };
 
@@ -114,42 +116,42 @@ const createH5PEditor = async (
     process.env.CONTENTSTORAGE !== "mongos3"
       ? new H5P.fsImplementations.FileContentStorage(localContentPath)
       : new dbImplementations.MongoS3ContentStorage(
-        dbImplementations.initS3({
-          s3ForcePathStyle: true,
-          signatureVersion: "v4",
-        }),
-        (await dbImplementations.initMongo()).collection(
-          process.env.CONTENT_MONGO_COLLECTION
+          dbImplementations.initS3({
+            s3ForcePathStyle: true,
+            signatureVersion: "v4",
+          }),
+          (await dbImplementations.initMongo()).collection(
+            process.env.CONTENT_MONGO_COLLECTION
+          ),
+          {
+            s3Bucket: process.env.CONTENT_AWS_S3_BUCKET,
+            maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
+              ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
+              : undefined,
+            getPermissions: (contentId, user) => {
+              if (user && user.isTutor) {
+                return tutorPermissions;
+              }
+              return learnerPermissions;
+            },
+          }
         ),
-        {
-          s3Bucket: process.env.CONTENT_AWS_S3_BUCKET,
-          maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
-            ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
-            : undefined,
-          getPermissions: (contentId, user) => {
-            if (user && user.isTutor) {
-              return tutorPermissions;
-            }
-            return learnerPermissions;
-          },
-        }
-      ),
     process.env.TEMPORARYSTORAGE === "s3"
       ? new dbImplementations.S3TemporaryFileStorage(
-        dbImplementations.initS3({
-          s3ForcePathStyle: true,
-          signatureVersion: "v4",
-        }),
-        {
-          s3Bucket: process.env.TEMPORARY_AWS_S3_BUCKET,
-          maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
-            ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
-            : undefined,
-        }
-      )
+          dbImplementations.initS3({
+            s3ForcePathStyle: true,
+            signatureVersion: "v4",
+          }),
+          {
+            s3Bucket: process.env.TEMPORARY_AWS_S3_BUCKET,
+            maxKeyLength: process.env.AWS_S3_MAX_FILE_LENGTH
+              ? Number.parseInt(process.env.AWS_S3_MAX_FILE_LENGTH, 10)
+              : undefined,
+          }
+        )
       : new H5P.fsImplementations.DirectoryTemporaryFileStorage(
-        localTemporaryPath
-      ),
+          localTemporaryPath
+        ),
     translationCallback,
     undefined,
     {
@@ -157,7 +159,7 @@ const createH5PEditor = async (
       enableLibraryNameLocalization: true,
       customization: {
         alterLibrarySemantics: alterLibrarySemanticsHook,
-        global: { scripts: ["/assets/js/hide-libraries.js"] }
+        global: { scripts: ["/assets/js/hide-libraries.js"] },
       },
     }
   );
@@ -220,7 +222,14 @@ exports.getH5PStuff = async () => {
     undefined,
     undefined,
     (key, language) => translationFunction(key, { lng: language }),
-    { customization: { global: { styles: ["/assets/css/base.css"], scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"] } } },
+    {
+      customization: {
+        global: {
+          styles: ["/assets/css/base.css"],
+          scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"],
+        },
+      },
+    }
   );
   return { h5pConfig, h5pEditor, h5pPlayer };
 };
