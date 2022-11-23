@@ -18,7 +18,7 @@ const h5pInstance = require("./h5p-helpers/instance");
 const h5pRender = require("./h5p-helpers/render");
 const streaming = require("./streaming/middleware");
 
-const VERSION = require('../src/server.js').VERSION;
+const LASTUPDATE = require("../src/server.js").LASTUPDATE;
 
 const {
   h5pAjaxExpressRouter,
@@ -66,7 +66,6 @@ app.use(express.static(__dirname, [".well-known", "assets"]));
 
 // Set up all our h5p things...
 h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor, h5pPlayer }) => {
-
   app.use(
     fileUpload({
       limits: { fileSize: h5pEditor.config.maxFileSize },
@@ -109,7 +108,7 @@ h5pInstance.getH5PStuff().then(({ h5pConfig, h5pEditor, h5pPlayer }) => {
     `${h5pEditor.config.baseUrl}/content-type-cache`,
     contentTypeCacheExpressRouter(h5pEditor.contentTypeCache)
   );
-  h5pConfig.VERSION = VERSION;
+  h5pConfig.LASTUPDATE = LASTUPDATE;
 
   app.get("/h5p", h5pRender.render(h5pEditor));
 });

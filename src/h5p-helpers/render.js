@@ -1,16 +1,16 @@
 exports.render = editor => {
-    return async (req, res) => {
-        const contentIds = await editor.contentManager.listContent();
-        const contentObjects = await Promise.all(
-            contentIds.map(async id => ({
-                content: await editor.contentManager.getContentMetadata(id, req.user),
-                id
-            }))
-        );
-        const filteredContentObjects = contentObjects.filter(
-            content => content.content.lti_context_id === req.session.context_id
-        );
-        res.send(`
+  return async (req, res) => {
+    const contentIds = await editor.contentManager.listContent();
+    const contentObjects = await Promise.all(
+      contentIds.map(async id => ({
+        content: await editor.contentManager.getContentMetadata(id, req.user),
+        id,
+      }))
+    );
+    const filteredContentObjects = contentObjects.filter(
+      content => content.content.lti_context_id === req.session.context_id
+    );
+    res.send(`
         <!doctype html>
         <html>
         <head>
@@ -22,28 +22,36 @@ exports.render = editor => {
         <body>
             <div class="container" style="margin-top:60px;">
                 <h1>Course H5P Library</h1>
-                ${req.session.context_title
-                ? `<div class="alert alert-warning">
+                ${
+                  req.session.context_title
+                    ? `<div class="alert alert-warning">
                       Content shown only for the course: 
                       ${req.session.context_title}
                     </div>`
-                : ""
-            }
-                <a class="btn btn-primary my-2" href="${editor.config.baseUrl
-            }/new" target="_blank"><span class="fa fa-plus-circle m-2"></span>Create new content</a>
-                ${filteredContentObjects.length == 0
-                ? "<h4 style='margin:30px 0'>There's no H5P content for this course yet</h4>"
-                : "<h2 style='margin: 30px 0'>Existing content</h2>"
-            }
+                    : ""
+                }
+                <a class="btn btn-primary my-2" href="${
+                  editor.config.baseUrl
+                }/new" target="_blank"><span class="fa fa-plus-circle m-2"></span>Create new content</a>
+                ${
+                  filteredContentObjects.length == 0
+                    ? "<h4 style='margin:30px 0'>There's no H5P content for this course yet</h4>"
+                    : "<h2 style='margin: 30px 0'>Existing content</h2>"
+                }
                 <div class="list-group">
                 ${filteredContentObjects
-                .map(
+                  .map(
                     content =>
-                        `<div class="list-group-item">
+                      `<div class="list-group-item">
                                 <div class="d-flex w-10">
                                     <div class="mr-auto p-2 align-self-center">
-                                        <a href="${editor.config.baseUrl}${editor.config.playUrl}/${content.id}">
-                                            <h5>${content.content.title || "Untitled"}</h5>
+                                        <a href="${editor.config.baseUrl}${
+                        editor.config.playUrl
+                      }/${content.id}">
+                                            <h5>${
+                                              content.content.title ||
+                                              "Untitled"
+                                            }</h5>
                                         </a>
                                         <div class="small d-flex">                                            
                                             <div class="mr-2">
@@ -55,8 +63,16 @@ exports.render = editor => {
                                                 ${content.id}
                                             </div>
                                             <div class="mr-2 copyTextClass" style="margin-top:-4px">
-                                                <input readonly="readonly" id="text_${content.id}" value="exercise=${content.id}">
-	                                              <button onclick="copyText('exercise=${content.id}', '${content.id}');" class="btn btn-link copy" title="Copy exercise expression">
+                                                <input readonly="readonly" id="text_${
+                                                  content.id
+                                                }" value="exercise=${
+                        content.id
+                      }">
+	                                              <button onclick="copyText('exercise=${
+                                                  content.id
+                                                }', '${
+                        content.id
+                      }');" class="btn btn-link copy" title="Copy exercise expression">
 		                                              <span class="fa fa-copy"></span>
 		                                              Copy
 	                                              </button>
@@ -64,29 +80,37 @@ exports.render = editor => {
                                         </div>
                                     </div>
                                     <div class="p-2">                                        
-                                        <a class="btn btn-secondary" href="${editor.config.baseUrl}/edit/${content.id}" target="_blank">
+                                        <a class="btn btn-secondary" href="${
+                                          editor.config.baseUrl
+                                        }/edit/${content.id}" target="_blank">
                                             <span class="fa fa-pencil-alt m-1"></span>
                                             edit
                                         </a>
                                 
-                                        <a class="btn btn-info" href="${editor.config.baseUrl}${editor.config.downloadUrl}/${content.id}">
+                                        <a class="btn btn-info" href="${
+                                          editor.config.baseUrl
+                                        }${editor.config.downloadUrl}/${
+                        content.id
+                      }">
                                             <span class="fa fa-file-download m-1"></span>
                                             download
                                         </a>
                                   
-                                        <a class="btn btn-danger" href="${editor.config.baseUrl}/delete/${content.id}">
+                                        <a class="btn btn-danger" href="${
+                                          editor.config.baseUrl
+                                        }/delete/${content.id}">
                                             <span class="fa fa-trash-alt m-1"></span>
                                             delete
                                         </a>
                                     </div>
                                 </div>                                
                             </div>`
-                )
-                .join("")}
+                  )
+                  .join("")}
                 </div>
-
-                <div>
-                    <h6>Version: ${editor.config.VERSION}</h6>
+                <br />
+                <div style="display:none">
+                    <h6>Last Update: ${editor.config.LASTUPDATE}</h6>
                 </div>
             </div>
             <script>
@@ -105,5 +129,5 @@ exports.render = editor => {
             </script>
             </body>
         `);
-    };
+  };
 };

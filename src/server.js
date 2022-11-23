@@ -1,4 +1,4 @@
-exports.VERSION = "1.0.0";
+exports.LASTUPDATE = "24th November 2022";
 
 const http = require("http");
 const https = require("https");
