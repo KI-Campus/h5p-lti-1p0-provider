@@ -3,7 +3,7 @@ H5P.jQuery(document).ready(function () {
   var exercisesFound = false;
   var hideExercisesTimer = null;
 
-  // This script forces to click on Check button when there is click on the Finish (For QuestionSet Exercises)
+  // This script fetches list of exercises to hide from the server and hides them
 
   // Check if there is H5P initialized
   if (H5P) {
