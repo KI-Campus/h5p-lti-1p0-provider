@@ -1,12 +1,10 @@
-exports.VERSION = "1.0.0";
+exports.LASTUPDATE = "24th November 2022";
 
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const app = require("./app");
 const router = require("./routes");
-
-
 
 const matchesDisallowedStudentPaths = path => {
   return (
@@ -30,12 +28,37 @@ app.use("/api/", router.apiroutes());
 // Set user permissions for H5P
 app.use((req, res, next) => {
   if (req.session.userId || process.env.NODE_ENV === "development") {
+    let userName;
+    if (req.session?.lis_person_name_full) {
+      userName = req.session.lis_person_name_full;
+    } else if (
+      req.session?.lis_person_name_given &&
+      !req.session?.lis_person_name_family
+    ) {
+      userName = req.session.lis_person_name_given;
+    } else if (
+      !req.session?.lis_person_name_given &&
+      req.session?.lis_person_name_family
+    ) {
+      userName = req.session.lis_person_name_family;
+    } else if (
+      req.session?.lis_person_name_given &&
+      req.session?.lis_person_name_family
+    ) {
+      userName =
+        req.session.lis_person_name_given +
+        " " +
+        req.session.lis_person_name_family;
+    } else {
+      userName = "No name given";
+    }
+
     req.user = {
       id:
         process.env.NODE_ENV === "development"
           ? "1"
           : String(req.session.userId),
-      name: "No name required",
+      name: req.session.userId ?? userName,
       canInstallRecommended:
         process.env.NODE_ENV === "development" ? true : req.session.isTutor,
       canUpdateAndInstallLibraries:
@@ -43,7 +66,9 @@ app.use((req, res, next) => {
       canCreateRestricted:
         process.env.NODE_ENV === "development" ? true : req.session.isTutor,
       type: "internet",
-      email: "noone@ki-campus.org",
+      email: req.session?.lis_person_contact_email_primary
+        ? req.session?.lis_person_contact_email_primary
+        : "noone@ki-campus.org",
       isTutor:
         process.env.NODE_ENV === "development" ? true : req.session.isTutor,
     };
