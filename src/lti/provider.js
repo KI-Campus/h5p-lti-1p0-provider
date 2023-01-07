@@ -46,7 +46,8 @@ exports.launch = async (req, res) => {
           return;
         }
         // Same some LTI Provider variables to the session
-        req.session.userId = provider.userId ?? provider.user_id;
+        req.session.userId =
+          provider.userId ?? provider.user_id ?? "No name given";
         req.session.context_id = provider.context_id;
         req.session.context_title = provider.context_title;
         req.session.resource_link_title = req.body.resource_link_title;
