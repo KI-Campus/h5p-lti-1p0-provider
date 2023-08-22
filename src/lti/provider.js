@@ -67,6 +67,10 @@ exports.launch = async (req, res) => {
         req.session.has_ext_content = !!provider.ext_content;
         req.session.custom_style_url = req.body.custom_style_url;
 
+        // If LTI consumer sends a custom download button enabled flag, use it to enable/disable the download button at the bottom of the exercise
+        req.session.download_button_enabled =
+          req.body.custom_download_button_enabled;
+
         req.session.lis_person_contact_email_primary =
           req.body.lis_person_contact_email_primary;
         req.session.lis_person_name_family = req.body.lis_person_name_family;
