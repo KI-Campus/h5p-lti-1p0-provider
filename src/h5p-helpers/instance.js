@@ -7,7 +7,7 @@ const i18next = require("i18next");
 const i18nextHttpMiddleware = require("i18next-http-middleware");
 const i18nextFsBackend = require("i18next-fs-backend");
 
-const Permission = H5P.Permission;
+const Permission = H5P.ContentPermission;
 
 const learnerPermissions = [Permission.View];
 const tutorPermissions = [
