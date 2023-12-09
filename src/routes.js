@@ -212,13 +212,26 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
       const sendPostRequest = async () => {
         try {
           // Encrypt personal information before sending it to LRS
-          /* Following personal data will be encrypted
+          /* Following personal data will be encrypted if found to have personal info in it
             req.session.email,
             req.session.username,
             req.session.userId,
+
+            req.body.data.statement.actor.mbox,
+            req.body.data.statement.actor.name,       
           */
 
           let encryptedSession = { ...req.session };
+
+          // Check if session has email info, then remove it
+          if (encryptedSession.email) {
+            encryptedSession.email = ""
+          }
+
+          if (req.body.data.statement.actor.mbox) {
+            req.body.data.statement.actor.mbox = ""
+          }
+
           /*
           // Disabling Encryption for now
              if (encryptedSession.email) { encryptedSession.email = require("crypto").createHash("sha256").update(encryptedSession.email).digest("hex") }

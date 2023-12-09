@@ -1,4 +1,4 @@
-var xAPICompleteListener = function (event) {
+var xAPIEventListener = function (event) {
   if (
     (event.getVerb() === "completed" || event.getVerb() === "answered") &&
     !event.getVerifiedStatementValue(["context", "contextActivities", "parent"])
@@ -21,7 +21,10 @@ var xAPICompleteListener = function (event) {
     request.send();
   }
 
-  // Send xAPI data to LRS
+  // Send xAPI data to LRS only if the verb is not "interacted"
+  if (event.getVerb() === "interacted")
+    return;
+
   var request_lrs = new XMLHttpRequest();
   request_lrs.open("POST", '../send_to_lrs', true);
   request_lrs.setRequestHeader("Content-Type", "application/json");
@@ -29,5 +32,5 @@ var xAPICompleteListener = function (event) {
 };
 
 if (H5P) {
-  H5P.externalDispatcher.on("xAPI", xAPICompleteListener);
+  H5P.externalDispatcher.on("xAPI", xAPIEventListener);
 }

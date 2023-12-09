@@ -46,7 +46,11 @@ exports.launch = async (req, res) => {
           return;
         }
         // Same some LTI Provider variables to the session
-        req.session.userId = provider.userId ?? provider.user_id;
+        req.session.userId =
+          req.body?.user_id ??
+          req.body?.userId ??
+          req.body.lis_result_sourcedid ??
+          "No name given";
         req.session.context_id = provider.context_id;
         req.session.context_title = provider.context_title;
         req.session.resource_link_title = req.body.resource_link_title;
@@ -62,6 +66,10 @@ exports.launch = async (req, res) => {
         req.session.has_outcome_service = !!provider.outcome_service;
         req.session.has_ext_content = !!provider.ext_content;
         req.session.custom_style_url = req.body.custom_style_url;
+
+        // If LTI consumer sends a custom download button enabled flag, use it to enable/disable the download button at the bottom of the exercise
+        req.session.download_button_enabled =
+          req.body.custom_download_button_enabled;
 
         req.session.lis_person_contact_email_primary =
           req.body.lis_person_contact_email_primary;

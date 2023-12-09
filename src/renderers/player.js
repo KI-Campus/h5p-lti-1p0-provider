@@ -6,32 +6,36 @@ exports.model = session => model =>
 <head>
     <meta charset="utf-8">
     ${model.styles
-    .map(style => `<link rel="stylesheet" href="${style}"/>`)
-    .join("\n    ")}
+      .map(style => `<link rel="stylesheet" href="${style}"/>`)
+      .join("\n    ")}
     ${model.scripts
-    .map(script => `<script src="${script}"></script>`)
-    .join("\n    ")}
+      .map(script => `<script src="${script}"></script>`)
+      .join("\n    ")}
     <script>
         H5PIntegration = ${JSON.stringify(model.integration, null, 2)};
     </script>
-    <title>${session.resource_link_title || session.context_title || "H5P Exercise"
-  }</title>
+    <title>${
+      session.resource_link_title || session.context_title || "H5P Exercise"
+    }</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     ${model.customScripts ? model.customScripts : ""}
-    ${session.custom_style_url
-    ? `<link rel="stylesheet" href="${session.custom_style_url}" />`
-    : ""
-  }
+    ${
+      session.custom_style_url
+        ? `<link rel="stylesheet" href="${session.custom_style_url}" />`
+        : ""
+    }
 </head>
 <body>
     <div class="kiron-h5p-container" style="max-width:900px; margin:0 auto; padding:0px 0px; position:relative;">
       <div class="h5p-content" data-content-id="${model.contentId}"></div>
-      ${session.custom_message
-    ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>${session.custom_message}</div>`
-    : ""
-  }
-      ${session.isTutor
-    ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>
+      ${
+        session.custom_message
+          ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>${session.custom_message}</div>`
+          : ""
+      }
+      ${
+        session.isTutor
+          ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>
           <p>You are seeing this message because you are logged in as an instructor</p>
           
     <p>To embed insert this into your
@@ -46,10 +50,16 @@ exports.model = session => model =>
           </p>
 
           </div><br><div style="display:none">Consumer: ${session.custom_consumer}</div>`
+          : ""
+      }
 
-    : ""
-  }
+      ${
+        session.download_button_enabled
+          ? `<a class="" href="/h5p/download/${model.contentId}"download><h6>Download</h6></a>`
+          : ""
+      }
       
     </div>
+   
 </body>
 </html>`;
