@@ -55,7 +55,7 @@ exports.model = session => model =>
           </p>
        
           ${
-            session.LRS_CREATE_USER_ENABLE
+            session.lrs_create_user_enable
               ? `<p>
               <div id="createUserDiv">
               <a onclick="requestCreateTempUser('${session.custom_consumer}','${session.context_id}')" class="btn btn-secondary" title="Generate LRS Login" type="button" href="#" style="margin:0px;">Generate LRS Login</a>
