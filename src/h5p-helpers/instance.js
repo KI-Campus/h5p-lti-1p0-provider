@@ -226,7 +226,11 @@ exports.getH5PStuff = async () => {
       customization: {
         global: {
           styles: ["/assets/css/base.css"],
-          scripts: ["/assets/js/xapi-send.js", "/assets/js/force-check.js"],
+          scripts: [
+            "/assets/js/xapi-send.js",
+            "/assets/js/force-check.js",
+            "/assets/js/lrs-create-temp-user.js",
+          ],
         },
       },
     }
