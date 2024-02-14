@@ -346,7 +346,7 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
             .end();
         } catch (err) {
           // Handle Error Here
-          res.status(500).send(JSON.stringify(err?.response.data)).end();
+          res.status(500).send(JSON.stringify(err?.response?.data)).end();
           console.error("Error sending to LRS: ", err?.response?.data ?? err);
         }
       };
