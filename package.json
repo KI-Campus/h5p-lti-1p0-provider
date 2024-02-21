@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server",
     "start:dev": "nodemon src/server",
-    "download": "yarn download:content-type-cache && yarn download:h5p",
+    "download": "yarn download:h5p && yarn download:content-type-cache",
     "test": "jest",
     "download:content-type-cache": "node scripts/update-real-content-type-cache.js",
     "download:h5p": "sh scripts/install.sh"
