@@ -33,7 +33,6 @@ Make sure you update `docker-compose` to better suit your situation. (e.g. Repla
 
 You might want to set up a cron job to restart the service each day - It will download the latest H5P Libraries.
 
-
 ### Initial Configuration
 
 Inside your learning tool, you will want to specify the following:
@@ -61,18 +60,18 @@ The scores in HPI do not go down
 - [x] Node application for H5P Editor
 - [x] Redis node for LTI memory storage
 
--  **Optional:**
-    - [x] External MongoDB for DB storage 
+- **Optional:**
+  - [x] External MongoDB for DB storage
 
 ## Remote DB + S3 file storage
 
-To make use of S3 storage and a mongo database to make the application horizontally 
+To make use of S3 storage and a mongo database to make the application horizontally
 scalable and remove all state from a single instance, we can enable saving data in mongoDB and files on AWS S3.
 
 For the mongo DB host, make sure that:
 
-* You specify the host like this: "mongodb://{{host}}:{{port}}"
-* If you are connecting to a localhost mongo db instance, make sure that service is exposed to docker - it is not sufficient to have localhost as the port. See more [here](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds) 
+- You specify the host like this: "mongodb://{{host}}:{{port}}"
+- If you are connecting to a localhost mongo db instance, make sure that service is exposed to docker - it is not sufficient to have localhost as the port. See more [here](https://docs.docker.com/docker-for-mac/networking/#use-cases-and-workarounds)
 
 You can get access to a free test MongoDB cluster [here](https://mongodb.com) to test.
 
@@ -95,21 +94,30 @@ MONGODB_PASSWORD={{mongodbpass}}
 ```
 
 ## Learning Record Store
+
 This LTI Provider/Tool can be used with an existing Learning Record Store (LRS). LRS is defined as:
+
 > The LRS is the heart of any xAPI ecosystem, receiving, storing and returning xAPI statements. You’ll need an LRS in order to do anything with xAPI. Every other tool which sends or retrieves learning activity data will interact with the LRS as the central store.
 
 For more information please refer to [xAPI.com](https://xapi.com/learning-record-store/)
 
 ### Configuration
+
 To enable LRS following variables are added to the env file:
+
 ```
 LRS_ENABLE={{0 or 1}}
 LRS_URL=http://{{your-lrs-host}}:{{lrs-port}}/{{lrs-path}}
+LRS_SHARED_SECRET_KEY={{your-lrs-shared-key}}
+
+LRS_CREATE_USER_ENABLE={{0 or 11}}
+LRS_PUBLIC_URL=http://{{your-lrs-host}}:{{lrs-port}}/{{public-path}}
 ```
+
 ## Testing
 
- - Some tests under /tests
- - Run `yarn test`
+- Some tests under /tests
+- Run `yarn test`
 
 ## LTI Consumer Versions
 

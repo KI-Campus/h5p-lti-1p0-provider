@@ -3,6 +3,7 @@ const express = require("express");
 const { ltiProvider, ltiApi } = require("./lti");
 const player = require("./renderers/player");
 const editor = require("./renderers/editor");
+const crypto = require("crypto");
 
 const expressSession = require("express-session");
 
@@ -204,6 +205,84 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
     res.status(200).end();
   });
 
+  // Create a new route to request LRS to create a new temp user
+  router.post("/create_temp_user", async (req, res) => {
+    console.log("/create_temp_user");
+    // Check if not tutor then send error
+    if (!req.session.isTutor) {
+      res.status(403).end();
+      return;
+    }
+
+    // If LRS is enabled in environment variables then send request to create user
+    if (process.env.LRS_ENABLE == 1) {
+      // Create a asyn function for axios
+      const sendPostRequest = async () => {
+        const message = {
+          courseId: req.session.context_id,
+          consumerId: req.session.custom_consumer,
+        };
+
+        if (!message.courseId || !message.consumerId) {
+          res.status(400).end();
+          return;
+        }
+
+        let SHARED_SECRET_KEY =
+          process.env.LRS_SHARED_SECRET_KEY ?? "EasyToReadSharedKey12345";
+        const signature = crypto
+          .createHmac("sha1", SHARED_SECRET_KEY)
+          .update(JSON.stringify(message))
+          .digest("hex");
+
+        let resp;
+        try {
+          console.log(
+            "Going to this endpoint: ",
+            process.env.LRS_URL + "/create_temp_user"
+          );
+          resp = await axios.post(
+            process.env.LRS_URL + "/create_temp_user",
+            message,
+            {
+              headers: {
+                "X-Signature": signature,
+              },
+            }
+          );
+
+          console.log(
+            "Sent request to LRS to create temp user for course ",
+            req.session.context_id
+          );
+
+          if (resp?.data?.success && resp?.data?.user) {
+            // Retrieve the user id from the response and send it back to the client
+            res
+              .status(200)
+              .send(
+                JSON.stringify({
+                  user: resp.data.user,
+                  lrsUrl: process.env.LRS_PUBLIC_URL,
+                })
+              )
+              .end();
+          } else {
+            res.status(500).end();
+          }
+        } catch (err) {
+          // Handle Error Here
+          res.status(500).send(JSON.stringify(err?.response.data)).end();
+          console.error(
+            "Error sending request to LRS to create temp user: ",
+            err?.response?.data ?? err
+          );
+        }
+      };
+      sendPostRequest();
+    }
+  });
+
   // Feed xAPI to LRS System
   router.post("/send_to_lrs", async (req, res) => {
     // If LRS is enabled in environment variables then send it
@@ -225,11 +304,11 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
 
           // Check if session has email info, then remove it
           if (encryptedSession.email) {
-            encryptedSession.email = ""
+            encryptedSession.email = "";
           }
 
           if (req.body.data.statement.actor.mbox) {
-            req.body.data.statement.actor.mbox = ""
+            req.body.data.statement.actor.mbox = "";
           }
 
           /*
@@ -239,31 +318,36 @@ exports.h5pRoutes = (h5pEditor, h5pPlayer, languageOverride) => {
              if (encryptedSession.userId) { encryptedSession.userId = require("crypto").createHash("sha256").update(encryptedSession.userId).digest("hex") }
            */
 
-          const resp = await axios.post(process.env.LRS_URL, {
+          const message = {
             xAPI: req.body.data.statement,
             metadata: {
               session: encryptedSession,
               session_extra: expressSession,
               createdAt: new Date(),
             },
-          });
-          console.log("Sent to LRS ", {
-            xAPI: req.body.data.statement,
-            metadata: {
-              session: encryptedSession,
-              session_extra: expressSession,
-              createdAt: new Date(),
-              reqUser: req.user,
+          };
+
+          let SHARED_SECRET_KEY =
+            process.env.LRS_SHARED_SECRET_KEY ?? "EasyToReadSharedKey12345";
+          const signature = crypto
+            .createHmac("sha1", SHARED_SECRET_KEY)
+            .update(JSON.stringify(message))
+            .digest("hex");
+
+          const resp = await axios.post(process.env.LRS_URL, message, {
+            headers: {
+              "X-Signature": signature,
             },
           });
+          console.log("Sent to LRS ", message);
           res
             .status(200)
             .send(JSON.stringify({ result: "sent to LRS" }))
             .end();
         } catch (err) {
           // Handle Error Here
-          res.status(500).end();
-          console.error("Error sending to LRS: ", err);
+          res.status(500).send(JSON.stringify(err?.response?.data)).end();
+          console.error("Error sending to LRS: ", err?.response?.data ?? err);
         }
       };
       sendPostRequest();

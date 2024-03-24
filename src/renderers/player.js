@@ -33,23 +33,40 @@ exports.model = session => model =>
           ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>${session.custom_message}</div>`
           : ""
       }
+    
       ${
         session.isTutor
           ? `<div class='h5p-confirmation-dialog-body' style='margin:20px auto;'>
           <p>You are seeing this message because you are logged in as an instructor</p>
           
     <p>To embed insert this into your
-          ${session.custom_consumer} course, edit the "Additional parameters for this exercise" to contain this:</p>
+          ${
+            session.custom_consumer
+          } course, edit the "Additional parameters for this exercise" to contain this:</p>
           <code>exercise=${model.contentId}</code>
     
           <p>
-            <a class="btn btn-secondary" title="Edit exercise" type="button" href="/h5p/edit/${model.contentId}" style="margin:0px;" target="_blank">Edit exercise</a>
+            <a class="btn btn-secondary" title="Edit exercise" type="button" href="/h5p/edit/${
+              model.contentId
+            }" style="margin:0px;" target="_blank">Edit exercise</a>
           </p>
           <p>
             <a class="btn btn-secondary" title="List all exercises in this course" type="button" href="/h5p" style="margin:0px;" target="_blank">List all exercises</a>
           </p>
+       
+          ${
+            session.lrs_create_user_enable
+              ? `<p>
+              <div id="createUserDiv">
+              <a onclick="requestCreateTempUser('${session.custom_consumer}','${session.context_id}')" class="btn btn-secondary" title="Generate LRS Login" type="button" href="#" style="margin:0px;">Generate LRS Login</a>
+              </div>
+          </p>`
+              : ""
+          }
 
-          </div><br><div style="display:none">Consumer: ${session.custom_consumer}</div>`
+          </div><br><div style="display:none">Consumer: ${
+            session.custom_consumer
+          }</div>`
           : ""
       }
 

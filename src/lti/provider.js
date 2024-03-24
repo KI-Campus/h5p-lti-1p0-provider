@@ -77,6 +77,10 @@ exports.launch = async (req, res) => {
         req.session.lis_person_name_full = req.body.lis_person_name_full;
         req.session.lis_person_name_given = req.body.lis_person_name_given;
 
+        // Env variable to enable disable LRS Temp User creation
+        req.session.lrs_create_user_enable =
+          process.env.LRS_CREATE_USER_ENABLE ?? false;
+
         // store provider in an object, we'll need it later for sending outcomes back to the consumer
         providers[req.session.id] = provider;
         // redirect
