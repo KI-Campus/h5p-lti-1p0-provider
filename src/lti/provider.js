@@ -79,7 +79,7 @@ exports.launch = async (req, res) => {
 
         // Env variable to enable disable LRS Temp User creation
         req.session.lrs_create_user_enable =
-          process.env.LRS_CREATE_USER_ENABLE ?? false;
+          process.env.LRS_CREATE_USER_ENABLE == 1 ? true : false;
 
         // store provider in an object, we'll need it later for sending outcomes back to the consumer
         providers[req.session.id] = provider;
