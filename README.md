@@ -110,7 +110,7 @@ LRS_ENABLE={{0 or 1}}
 LRS_URL=http://{{your-lrs-host}}:{{lrs-port}}/{{lrs-path}}
 LRS_SHARED_SECRET_KEY={{your-lrs-shared-key}}
 
-LRS_CREATE_USER_ENABLE={{0 or 11}}
+LRS_CREATE_USER_ENABLE={{0 or 1}}
 LRS_PUBLIC_URL=http://{{your-lrs-host}}:{{lrs-port}}/{{public-path}}
 ```
 
