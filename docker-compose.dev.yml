@@ -31,10 +31,7 @@ services:
       AWS_S3_MAX_FILE_LENGTH: 100
       CONTENT_AWS_S3_BUCKET: testbucket1
       TEMPORARY_AWS_S3_BUCKET: tempbucket1
-      MONGODB_URL: mongodb://mongo:27017
-      MONGODB_DB: testdb1
-      MONGODB_USER: root
-      MONGODB_PASSWORD: example
+      MONGO_COMPLETE_URL: mongodb://root:example@mongo:27017/testdb1
       CONTENT_MONGO_COLLECTION: h5p
       CACHE: redis
       REDIS_HOST: redis

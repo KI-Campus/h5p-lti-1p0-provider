@@ -87,10 +87,7 @@ CONTENT_AWS_S3_BUCKET={{your-content-bucket-name}
 CONTENT_MONGO_COLLECTION=h5p
 TEMPORARY_AWS_S3_BUCKET={{your-temporary-file-bucket-name}}
 CONTENTSTORAGE=mongos3
-MONGODB_URL="mongodb://{{host}}:{{port}}"
-MONGODB_DB={{mongodbname}}
-MONGODB_USER={{mongodbuser}}
-MONGODB_PASSWORD={{mongodbpass}}
+MONGO_COMPLETE_URL={{mongodb://{{username}}:{{password}}@{{host}}:{{port}}/{{db-name}}}}
 ```
 
 ## Learning Record Store
