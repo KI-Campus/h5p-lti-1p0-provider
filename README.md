@@ -83,10 +83,14 @@ AWS_ACCESS_KEY_ID={{S3 access key}}
 AWS_SECRET_ACCESS_KEY={{S3 access key}}
 AWS_S3_ENDPOINT="https://s3.amazonaws.com"
 AWS_REGION={{ e.g. eu-central-1 }}
-CONTENT_AWS_S3_BUCKET={{your-content-bucket-name}
+CONTENT_AWS_S3_BUCKET={{your-content-bucket-name}}
 CONTENT_MONGO_COLLECTION=h5p
 TEMPORARY_AWS_S3_BUCKET={{your-temporary-file-bucket-name}}
 CONTENTSTORAGE=mongos3
+MONGODB_URL="mongodb://{{host}}:{{port}}"
+MONGODB_DB={{mongodbname}}
+MONGODB_USER={{mongodbuser}}
+MONGODB_PASSWORD={{mongodbpass}}
 MONGO_COMPLETE_URL={{mongodb://{{username}}:{{password}}@{{host}}:{{port}}/{{db-name}}}}
 ```
 
